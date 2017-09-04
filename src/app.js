@@ -121,6 +121,28 @@ function sanitizeHTML(strings) {
   return result;
 }
 
+
+      function geocodeAddress(geocoder, resultsMap) {
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+            //pin places as well using the places api
+
+
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+
+
+
+
 function initMap() {
 
   // Create the map.
@@ -146,6 +168,17 @@ function initMap() {
   const apiKey = 'YOUR_API_KEY';
   const infoWindow = new google.maps.InfoWindow();
   infoWindow.setOptions({pixelOffset: new google.maps.Size(0, -30)});
+
+
+        //change to other city,place
+           var geocoder = new google.maps.Geocoder();
+           document.getElementById('submit').addEventListener('click', function() {
+                 geocodeAddress(geocoder, map);
+           });
+
+	   //repaint with places API DATA
+
+
 
   // Show the information for a store when its marker is clicked.
   map.data.addListener('click', event => {
