@@ -107,6 +107,8 @@ const mapStyle = [
   }
 ];
 
+var map;
+
 // Escapes HTML characters in a template literal string, to prevent XSS.
 // See https://www.owasp.org/index.php/XSS_%28Cross_Site_Scripting%29_Prevention_Cheat_Sheet#RULE_.231_-_HTML_Escape_Before_Inserting_Untrusted_Data_into_HTML_Element_Content
 function sanitizeHTML(strings) {
@@ -121,6 +123,33 @@ function sanitizeHTML(strings) {
   return result;
 }
 
+///nearby places
+
+      function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+          }
+        }
+      }
+
+      function createMarker(place) {
+        var placeLoc = place.geometry.location;
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(place.name);
+          infowindow.open(map, this);
+        });
+      }
+
+
+
+
+///Location fetch
 
       function geocodeAddress(geocoder, resultsMap) {
         var address = document.getElementById('address').value;
@@ -132,6 +161,15 @@ function sanitizeHTML(strings) {
               position: results[0].geometry.location
             });
             //pin places as well using the places api
+            var pyrmont = resultsMap.getCenter();
+            console.log( pyrmont);
+	    var service = new google.maps.places.PlacesService(resultsMap);
+        	service.nearbySearch({
+          		location: pyrmont,
+          		radius: 500,
+          		type: ['store']
+        	}, callback);
+
 
 
           } else {
@@ -181,26 +219,5 @@ function initMap() {
 
 
   // Show the information for a store when its marker is clicked.
-  map.data.addListener('click', event => {
-
-    const category = event.feature.getProperty('category');
-    const name = event.feature.getProperty('name');
-    const description = event.feature.getProperty('description');
-    const hours = event.feature.getProperty('hours');
-    const phone = event.feature.getProperty('phone');
-    const position = event.feature.getGeometry().get();
-    const content = sanitizeHTML`
-      <img style="float:left; width:200px; margin-top:30px" src="img/logo_${category}.png">
-      <div style="margin-left:220px; margin-bottom:20px;">
-        <h2>${name}</h2><p>${description}</p>
-        <p><b>Open:</b> ${hours}<br/><b>Phone:</b> ${phone}</p>
-        <p><img src="https://maps.googleapis.com/maps/api/streetview?size=350x120&location=${position.lat()},${position.lng()}&key=${apiKey}"></p>
-      </div>
-    `;
-
-    infoWindow.setContent(content);
-    infoWindow.setPosition(position);
-    infoWindow.open(map);
-  });
 
 }
