@@ -108,7 +108,7 @@ const mapStyle = [
 ];
 
 var map;
-
+var infoWindow
 // Escapes HTML characters in a template literal string, to prevent XSS.
 // See https://www.owasp.org/index.php/XSS_%28Cross_Site_Scripting%29_Prevention_Cheat_Sheet#RULE_.231_-_HTML_Escape_Before_Inserting_Untrusted_Data_into_HTML_Element_Content
 function sanitizeHTML(strings) {
@@ -139,10 +139,12 @@ function sanitizeHTML(strings) {
           map: map,
           position: place.geometry.location
         });
-
+        var contentstr= '';
+        contentstr= contentstr.concat( place.name,',',place.vicinity);
+        
         google.maps.event.addListener(marker, 'click', function() {
-          infowindow.setContent(place.name);
-          infowindow.open(map, this);
+          infoWindow.setContent(contentstr);
+          infoWindow.open(map, this);
         });
       }
 
@@ -169,8 +171,9 @@ function sanitizeHTML(strings) {
 	    var service = new google.maps.places.PlacesService(resultsMap);
         	service.nearbySearch({
           		location:new google.maps.LatLng(lat,lng),
-          		radius: 500,
-          		type: ['store']
+          		radius: 5000,
+          		//type: ['amuesement_park', 'art_gallery', 'museum']
+                        keyword: 'attractions'
         	}, callback);
 
 
@@ -207,7 +210,7 @@ function initMap() {
   });
 
   const apiKey = 'YOUR_API_KEY';
-  const infoWindow = new google.maps.InfoWindow();
+  infoWindow = new google.maps.InfoWindow();
   infoWindow.setOptions({pixelOffset: new google.maps.Size(0, -30)});
 
 
