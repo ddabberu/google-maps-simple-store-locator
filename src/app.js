@@ -161,11 +161,14 @@ function sanitizeHTML(strings) {
               position: results[0].geometry.location
             });
             //pin places as well using the places api
-            var pyrmont = resultsMap.getCenter();
-            console.log( pyrmont);
+            //var pyrmont = resultsMap.getCenter();
+	     var lat=  resultsMap.getCenter().lat();
+	     var lng=  resultsMap.getCenter().lng();
+            console.log( lat);
+            console.log( lng);
 	    var service = new google.maps.places.PlacesService(resultsMap);
         	service.nearbySearch({
-          		location: pyrmont,
+          		location:new google.maps.LatLng(lat,lng),
           		radius: 500,
           		type: ['store']
         	}, callback);
@@ -184,8 +187,8 @@ function sanitizeHTML(strings) {
 function initMap() {
 
   // Create the map.
-  const map = new google.maps.Map(document.getElementsByClassName('map')[0], {
-    zoom: 7,
+    map = new google.maps.Map(document.getElementsByClassName('map')[0], {
+    zoom: 15,
     center: {lat: 52.632469, lng: -1.689423},
     styles: mapStyle
   });
